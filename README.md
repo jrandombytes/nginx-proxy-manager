@@ -2,10 +2,55 @@
 
 # jrandombytes/nginx-proxy-manager
 
-[![version](https://img.shields.io/badge/version-2.14.17-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
+[![version](https://img.shields.io/badge/version-2.14.18-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
 [![base](https://img.shields.io/badge/nginx-mainline-brightgreen.svg?style=for-the-badge)](https://nginx.org/en/download.html)
 
-A security-hardened fork of [NginxProxyManager v2.14](https://github.com/NginxProxyManager/nginx-proxy-manager), with an owned nginx mainline base image and a fully self-controlled CI build pipeline.
+## What is this?
+
+**Nginx Proxy Manager** is a self-hosted reverse proxy with a web UI that just works. Route your domains to your services, get automatic SSL, and never write an nginx config file again.
+
+If you're running multiple services on your own server — whether that's a homelab, a VPS, or an on-premise machine — this is the missing piece that ties everything together.
+
+## Who it's for
+
+- Developers hosting multiple Docker containers on a single server
+- Homelab enthusiasts who want real domains and real SSL on their self-hosted apps
+- Small teams managing internal tools without a dedicated ops person
+- Anyone tired of remembering which service runs on which port
+
+## Why it works
+
+**No config files.** Add a proxy host, point it at a service or container, and you're done. What used to take hours of nginx editing takes under a minute.
+
+**Docker-friendly out of the box.** Running ten containers on ten different ports? Map each one to a clean subdomain — `app.yourdomain.com` instead of `yourdomain.com:8080`. No port juggling, no awkward URLs.
+
+**SSL that manages itself.** Let's Encrypt certificates are issued and renewed automatically. Set it up once, forget about it.
+
+**More than just HTTP.** Proxy TCP and UDP streams alongside your web services — all from the same interface.
+
+**Runs anywhere, depends on nothing.** Fully self-hosted, air-gap capable, no cloud account required. Your infrastructure stays yours.
+
+**Grows with you.** When you need it — access lists, basic auth, rate limiting, custom nginx directives — it's all there.
+
+## Best paired with Cloudflare
+
+Nginx Proxy Manager handles routing and SSL at your server. **Cloudflare's free tier** covers everything in front of it — DDoS protection, CDN, edge caching, and a basic WAF — with no extra cost or complexity.
+
+Together, they give you a production-grade stack that punches well above its weight:
+
+- **Cloudflare** — protects and accelerates traffic before it reaches your server
+- **Nginx Proxy Manager** — routes that traffic to the right service once it arrives
+
+Neither replaces the other. They do different jobs, and they do them well together.
+
+## When it makes sense
+
+| Good fit | Probably overkill |
+|---|---|
+| Multiple Docker containers on one server | Single app, single domain |
+| Teams without dedicated DevOps | Full infrastructure-as-code setup |
+| Mixed HTTP + TCP/UDP workloads | Everything already on a managed platform |
+| Self-hosted, on-prem, or air-gapped | Cloudflare Tunnel covers all your needs |
 
 ## Why this fork?
 
@@ -51,8 +96,10 @@ volumes:
   npm_letsencrypt:
 ```
 
-Access the admin UI at `http://<your-server>:81`  
-Default credentials: `admin@example.com` / `changeme`
+Access the admin UI at `http://<your-server>:81`
+
+> **Default credentials:** `admin@example.com` / `changeme`
+> **Change these immediately after first login.**
 
 ## Environment variables
 
