@@ -2,7 +2,7 @@
 
 # jrandombytes/nginx-proxy-manager
 
-[![version](https://img.shields.io/badge/version-2.14.11-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
+[![version](https://img.shields.io/badge/version-2.14.15-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
 [![base](https://img.shields.io/badge/nginx-mainline-brightgreen.svg?style=for-the-badge)](https://nginx.org/en/download.html)
 
 A security-hardened fork of [NginxProxyManager v2.14](https://github.com/NginxProxyManager/nginx-proxy-manager), with an owned nginx mainline base image and a fully self-controlled CI build pipeline.
@@ -23,7 +23,10 @@ The official image (`jc21/nginx-proxy-manager`) bundles OpenResty and depends on
 | Timing oracle (user enumeration) | Vulnerable | ✅ Fixed |
 | Shell escape RCE (DNS credentials) | Vulnerable (PR#5498 incomplete) | ✅ Fixed (correct POSIX idiom) |
 | SSRF guard | Not available | ✅ Opt-in (`BLOCK_PRIVATE_UPSTREAM=true`) |
-| Rate limiting | Not available | ✅ Per-host `limit_req_zone` / `limit_req` with UI controls |
+| Per-host rate limiting | Not available | ✅ `limit_req_zone` / `limit_req` with UI controls |
+| Cloudflare Turnstile on login | Not available | ✅ Opt-in bot protection (Settings UI) |
+| Login + 2FA rate limiting | Not available | ✅ `express-rate-limit` (10 req / 15 min) |
+| Cloudflare IP restriction | Not available | ✅ Drop non-CF origin requests (`return 444`, Settings UI) |
 
 ## Quick start
 
@@ -99,7 +102,10 @@ Your server / Portainer stack
 - **Timing oracle** — Login always runs bcrypt even for unknown users, preventing email enumeration.
 - **Shell escape RCE** — DNS provider credentials correctly escaped with POSIX `'\''` idiom.
 - **Schema injection** — Pattern constraints on user-supplied fields prevent nginx config injection.
-- **Rate limiting** — Per-host `limit_req_zone` / `limit_req` with UI controls (rate req/s, burst, nodelay) — application-layer throttling per client IP.
+- **Per-host rate limiting** — `limit_req_zone` / `limit_req` with UI controls (rate req/s, burst, nodelay).
+- **Cloudflare Turnstile** — Opt-in bot protection on the login page (Settings UI). Includes secret key redaction, nonce replay protection, and CSP headers for the widget.
+- **Login + 2FA rate limiting** — `express-rate-limit` on `/api/tokens` (10 failed/15 min) and `/api/tokens/2fa` (10/5 min).
+- **Cloudflare IP restriction** — Global toggle (Settings UI) that silently drops (`return 444`) any proxy host request not from a Cloudflare edge IP. Protects origins from bypass attacks when all traffic flows through Cloudflare.
 - **TLS** — `ssl_prefer_server_ciphers on`; TLS 1.2+ only.
 
 ## Versioning
