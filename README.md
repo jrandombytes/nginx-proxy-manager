@@ -2,7 +2,7 @@
 
 # nginx-proxy-manager — Security-Hardened Fork
 
-[![version](https://img.shields.io/badge/version-2.14.8-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
+[![version](https://img.shields.io/badge/version-2.14.9-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
 [![base](https://img.shields.io/badge/nginx-mainline-brightgreen.svg?style=for-the-badge)](https://nginx.org/en/download.html)
 
 A security-hardened fork of [NginxProxyManager v2.14](https://github.com/NginxProxyManager/nginx-proxy-manager), with an owned nginx mainline base image and a fully self-controlled CI build pipeline.
@@ -108,4 +108,6 @@ This fork tracks the upstream 2.14.x release line. Patch versions (`2.14.x`) are
 
 ## Source
 
+- **This fork (GitHub):** https://github.com/jrandombytes/nginx-proxy-manager
+- **Docker Hub:** https://hub.docker.com/r/jrandombytes/nginx-proxy-manager
 - **Upstream:** https://github.com/NginxProxyManager/nginx-proxy-manager
