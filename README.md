@@ -2,7 +2,7 @@
 
 # jrandombytes/nginx-proxy-manager
 
-[![version](https://img.shields.io/badge/version-2.14.15-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
+[![version](https://img.shields.io/badge/version-2.14.16-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
 [![base](https://img.shields.io/badge/nginx-mainline-brightgreen.svg?style=for-the-badge)](https://nginx.org/en/download.html)
 
 A security-hardened fork of [NginxProxyManager v2.14](https://github.com/NginxProxyManager/nginx-proxy-manager), with an owned nginx mainline base image and a fully self-controlled CI build pipeline.
@@ -78,22 +78,6 @@ SQLite is the default. MySQL/MariaDB and PostgreSQL are also supported via envir
 | `80` | HTTP proxy traffic |
 | `81` | Admin UI |
 | `443` | HTTPS proxy traffic |
-
-## Build pipeline
-
-```
-nginx.org apt (mainline)
-    ↓
-jrandombytes/nginx-full:certbot-node   ← rebuilt weekly
-    ↓
-jrandombytes/nginx-proxy-manager       ← rebuilt after base image changes
-    ↓
-Your server / Portainer stack
-```
-
-- Base image rebuilt **weekly** (Tuesday 02:00 UTC) to pick up new nginx point releases
-- App image rebuilt automatically after base image succeeds
-- Any new nginx CVE → base image update → app image update, fully automated
 
 ## Security fixes in this fork
 
