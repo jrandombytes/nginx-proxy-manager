@@ -1,6 +1,6 @@
 > **Note:** This Docker container is entirely unofficial and not made by the creators of Nginx Proxy Manager.
 
-# nginx-proxy-manager — Security-Hardened Fork
+# jrandombytes/nginx-proxy-manager
 
 [![version](https://img.shields.io/badge/version-2.14.9-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
 [![base](https://img.shields.io/badge/nginx-mainline-brightgreen.svg?style=for-the-badge)](https://nginx.org/en/download.html)
