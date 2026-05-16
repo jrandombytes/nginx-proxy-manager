@@ -2,7 +2,7 @@
 
 # jrandombytes/nginx-proxy-manager
 
-[![version](https://img.shields.io/badge/version-2.14.30-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
+[![version](https://img.shields.io/badge/version-2.14.31-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
 [![base](https://img.shields.io/badge/nginx-mainline-brightgreen.svg?style=for-the-badge)](https://nginx.org/en/download.html)
 
 ## What is this?
@@ -98,8 +98,9 @@ volumes:
 
 Access the admin UI at `http://<your-server>:81`
 
-> **Default credentials:** `admin@example.com` / `changeme`
-> **Change these immediately after first login.**
+> **First-time setup:** the container ships with no users. On first visit you will be shown a one-shot setup wizard — fill in your name, email, and password. That account becomes the initial administrator.
+>
+> For automated deployments, set `INITIAL_ADMIN_EMAIL` and `INITIAL_ADMIN_PASSWORD` env vars instead — the container will provision the admin at boot. Unset both vars after first successful login.
 
 ## Environment variables
 
