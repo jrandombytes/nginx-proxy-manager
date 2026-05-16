@@ -2,7 +2,7 @@
 
 # jrandombytes/nginx-proxy-manager
 
-[![version](https://img.shields.io/badge/version-2.14.32-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
+[![version](https://img.shields.io/badge/version-2.14.33-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
 [![base](https://img.shields.io/badge/nginx-mainline-brightgreen.svg?style=for-the-badge)](https://nginx.org/en/download.html)
 
 ## What is this?
@@ -72,6 +72,7 @@ The official image (`jc21/nginx-proxy-manager`) bundles OpenResty and depends on
 | Cloudflare Turnstile on login | Not available | ✅ Opt-in bot protection (Settings UI) |
 | Login + 2FA rate limiting | Not available | ✅ `express-rate-limit` (10 req / 15 min) |
 | Cloudflare IP restriction | Not available | ✅ Drop non-CF origin requests (`return 444`, Settings UI) |
+| Session token storage | `localStorage` (XSS-readable) | ✅ HttpOnly cookie + CSRF double-submit (v2.14.28) |
 
 ## Quick start
 
@@ -138,6 +139,7 @@ SQLite is the default. MySQL/MariaDB and PostgreSQL are also supported via envir
 - **Cloudflare Turnstile** — Opt-in bot protection on the login page (Settings UI). Includes secret key redaction, nonce replay protection, and CSP headers for the widget.
 - **Login + 2FA rate limiting** — `express-rate-limit` on `/api/tokens` (10 failed/15 min) and `/api/tokens/2fa` (10/5 min).
 - **Cloudflare IP restriction** — Global toggle (Settings UI) that silently drops (`return 444`) any proxy host request not from a Cloudflare edge IP. Protects origins from bypass attacks when all traffic flows through Cloudflare.
+- **Session token security** — JWT is no longer stored in `window.localStorage`. Any XSS in the official image yields a full session token via `localStorage.getItem("authentications")` — no further exploit needed, ~24 h access. This fork moves the token to an `HttpOnly` + `SameSite=Strict` cookie (`npm_session`) that JavaScript cannot read. A CSRF double-submit token (`npm_csrf`) prevents cross-site request forgery now that the credential is cookie-bound. Token rotated on login, 2FA, impersonation, and logout; preserved on 5-minute refresh to avoid in-flight 403 races. Bearer `Authorization` header still accepted for API clients and CI pipelines. Set `FORCE_SECURE_COOKIES=true` when the admin UI is behind a TLS-terminating edge (e.g. Cloudflare).
 - **TLS** — `ssl_prefer_server_ciphers on`; TLS 1.2+ only.
 
 ## Versioning
