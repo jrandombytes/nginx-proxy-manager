@@ -2,7 +2,7 @@
 
 # jrandombytes/nginx-proxy-manager
 
-[![version](https://img.shields.io/badge/version-2.14.39-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
+[![version](https://img.shields.io/badge/version-2.14.40-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
 [![base](https://img.shields.io/badge/nginx-mainline-brightgreen.svg?style=for-the-badge)](https://nginx.org/en/download.html)
 
 ## What is this?
@@ -73,7 +73,9 @@ The official image (`jc21/nginx-proxy-manager`) bundles OpenResty and depends on
 | Login + 2FA rate limiting | Not available | ✅ `express-rate-limit` (10 req / 15 min) |
 | Cloudflare IP restriction | Not available | ✅ Drop non-CF origin requests (`return 444`, Settings UI) |
 | Session token storage | `localStorage` (XSS-readable) | ✅ HttpOnly cookie + CSRF double-submit (v2.14.28) |
-| Per-host nginx log viewer (admin) | ❌ Not available | ✅ Logs tab on proxy / dead / redirection-host modals (v2.14.36) |
+| Per-host nginx log viewer (admin) | ❌ Not available | ✅ Logs tab on proxy / dead / redirection-host modals; newest-first by default (v2.14.36; admin-gate fix v2.14.38; newest-first + real-IP + TZ v2.14.40) |
+| Real client IP behind Cloudflare | ❌ Logs show CF edge IP | ✅ `real-ip-header` setting (`CF-Connecting-IP` / `X-Real-IP` / `X-Forwarded-For`) — logs show actual visitor (v2.14.40, BUG-031) |
+| Timezone for log timestamps | ❌ UTC only | ✅ `TZ` env var (e.g. `Asia/Manila`); fails closed to UTC on invalid value (v2.14.40, BUG-032) |
 | Logrotate scheduler | ⚠️ Config ships but never fires (no cron) | ✅ s6 longrun runs logrotate daily (v2.14.36) |
 
 ## Quick start
@@ -118,6 +120,7 @@ Access the admin UI at `http://<your-server>:81`
 | `DB_POSTGRES_HOST` | — | PostgreSQL host (if using PostgreSQL instead of SQLite) |
 | `LE_STAGING` | `false` | Use Let's Encrypt staging environment |
 | `LOGROTATE_INTERVAL` | `86400` | Seconds between logrotate cycles (must be a positive integer; falls back to default on invalid value) |
+| `TZ` | — | IANA timezone (e.g. `Asia/Manila`, `Asia/Singapore`, `Etc/UTC`). Applied at boot to nginx log timestamps, audit log, Node logs, certbot renewal logs. Invalid value → falls back to UTC. (v2.14.40) |
 | `FORCE_SECURE_COOKIES` | — | Force `Secure` flag on `npm_session` / `npm_csrf` cookies regardless of `req.secure`. Recommended `true` when behind Cloudflare or any TLS-terminating edge. |
 | `CORS_ALLOWED_ORIGINS` | — | Comma-separated allowlist of CORS origins. Unset = same-origin only. Never use `*` with credentials. |
 
@@ -147,6 +150,10 @@ SQLite is the default. MySQL/MariaDB and PostgreSQL are also supported via envir
 - **Session token security** — JWT is no longer stored in `window.localStorage`. Any XSS in the official image yields a full session token via `localStorage.getItem("authentications")` — no further exploit needed, ~24 h access. This fork moves the token to an `HttpOnly` + `SameSite=Strict` cookie (`npm_session`) that JavaScript cannot read. A CSRF double-submit token (`npm_csrf`) prevents cross-site request forgery now that the credential is cookie-bound. Token rotated on login, 2FA, impersonation, and logout; preserved on 5-minute refresh to avoid in-flight 403 races. Bearer `Authorization` header still accepted for API clients and CI pipelines. Set `FORCE_SECURE_COOKIES=true` when the admin UI is behind a TLS-terminating edge (e.g. Cloudflare).
 - **Per-host log viewer (admin-only)** — Triage 5xx and unexpected 4xx responses from the admin UI without SSHing into the container. New "Logs" tab on the proxy-host, dead-host, and redirection-host modals shows the tail of `/data/logs/{type}-{id}_{access,error}.log` via a bounded seek-from-end reader (256 KiB chunk, 1000-line max). Hidden from non-admin users. Every read is audit-logged. Path-traversal proof — host_type is on a closed allow-list, id is asserted positive integer, stream is `access|error` only.
 - **Logrotate enforcement** — The base image ships `/etc/logrotate.d/nginx-proxy-manager` but the container has no cron daemon, so it never fired upstream. This fork adds an s6 longrun service that runs `logrotate /etc/logrotate.conf` every `LOGROTATE_INTERVAL` (default 86400 = 24 h). Access logs rotate weekly × 4, error logs weekly × 10, both compressed.
+- **BUG-026 (admin gate) — Per-host log viewer 403'd all callers including admins.** Fixed v2.14.38 by replacing token-scope check with role-based `access.can('hostlogs:read')`.
+- **BUG-026-A/B/C (`isAdmin()` rewrite) — admin `advanced_config` and user role/disabled updates silently failing.** Fixed v2.14.39 by exposing `access.getUserRoles()` and rewriting `isAdmin()` to consult `user.roles` instead of `token.hasScope("admin")`.
+- **BUG-031 — Logs recorded Cloudflare edge IPs instead of real client IPs.** Fixed v2.14.40 with a new `real-ip-header` setting and dynamically rendered `real_ip_header` include; CF/CloudFront `set_real_ip_from` list already shipped via `ip_ranges.conf`.
+- **BUG-032 — No way to set the container timezone.** Fixed v2.14.40 with a `TZ` env var applied at boot to `/etc/localtime`. Falls back closed to UTC on invalid input.
 - **TLS** — `ssl_prefer_server_ciphers on`; TLS 1.2+ only.
 
 ## Versioning
