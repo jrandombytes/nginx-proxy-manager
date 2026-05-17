@@ -2,7 +2,7 @@
 
 # jrandombytes/nginx-proxy-manager
 
-[![version](https://img.shields.io/badge/version-2.14.37-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
+[![version](https://img.shields.io/badge/version-2.14.38-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
 [![base](https://img.shields.io/badge/nginx-mainline-brightgreen.svg?style=for-the-badge)](https://nginx.org/en/download.html)
 
 ## What is this?
@@ -73,6 +73,8 @@ The official image (`jc21/nginx-proxy-manager`) bundles OpenResty and depends on
 | Login + 2FA rate limiting | Not available | ✅ `express-rate-limit` (10 req / 15 min) |
 | Cloudflare IP restriction | Not available | ✅ Drop non-CF origin requests (`return 444`, Settings UI) |
 | Session token storage | `localStorage` (XSS-readable) | ✅ HttpOnly cookie + CSRF double-submit (v2.14.28) |
+| Per-host nginx log viewer (admin) | ❌ Not available | ✅ Logs tab on proxy / dead / redirection-host modals (v2.14.36) |
+| Logrotate scheduler | ⚠️ Config ships but never fires (no cron) | ✅ s6 longrun runs logrotate daily (v2.14.36) |
 
 ## Quick start
 
@@ -115,6 +117,9 @@ Access the admin UI at `http://<your-server>:81`
 | `DB_MYSQL_HOST` | — | MySQL host (if using MySQL instead of SQLite) |
 | `DB_POSTGRES_HOST` | — | PostgreSQL host (if using PostgreSQL instead of SQLite) |
 | `LE_STAGING` | `false` | Use Let's Encrypt staging environment |
+| `LOGROTATE_INTERVAL` | `86400` | Seconds between logrotate cycles (must be a positive integer; falls back to default on invalid value) |
+| `FORCE_SECURE_COOKIES` | — | Force `Secure` flag on `npm_session` / `npm_csrf` cookies regardless of `req.secure`. Recommended `true` when behind Cloudflare or any TLS-terminating edge. |
+| `CORS_ALLOWED_ORIGINS` | — | Comma-separated allowlist of CORS origins. Unset = same-origin only. Never use `*` with credentials. |
 
 ## Database backends
 
@@ -140,6 +145,8 @@ SQLite is the default. MySQL/MariaDB and PostgreSQL are also supported via envir
 - **Login + 2FA rate limiting** — `express-rate-limit` on `/api/tokens` (10 failed/15 min) and `/api/tokens/2fa` (10/5 min).
 - **Cloudflare IP restriction** — Global toggle (Settings UI) that silently drops (`return 444`) any proxy host request not from a Cloudflare edge IP. Protects origins from bypass attacks when all traffic flows through Cloudflare.
 - **Session token security** — JWT is no longer stored in `window.localStorage`. Any XSS in the official image yields a full session token via `localStorage.getItem("authentications")` — no further exploit needed, ~24 h access. This fork moves the token to an `HttpOnly` + `SameSite=Strict` cookie (`npm_session`) that JavaScript cannot read. A CSRF double-submit token (`npm_csrf`) prevents cross-site request forgery now that the credential is cookie-bound. Token rotated on login, 2FA, impersonation, and logout; preserved on 5-minute refresh to avoid in-flight 403 races. Bearer `Authorization` header still accepted for API clients and CI pipelines. Set `FORCE_SECURE_COOKIES=true` when the admin UI is behind a TLS-terminating edge (e.g. Cloudflare).
+- **Per-host log viewer (admin-only)** — Triage 5xx and unexpected 4xx responses from the admin UI without SSHing into the container. New "Logs" tab on the proxy-host, dead-host, and redirection-host modals shows the tail of `/data/logs/{type}-{id}_{access,error}.log` via a bounded seek-from-end reader (256 KiB chunk, 1000-line max). Hidden from non-admin users. Every read is audit-logged. Path-traversal proof — host_type is on a closed allow-list, id is asserted positive integer, stream is `access|error` only.
+- **Logrotate enforcement** — The base image ships `/etc/logrotate.d/nginx-proxy-manager` but the container has no cron daemon, so it never fired upstream. This fork adds an s6 longrun service that runs `logrotate /etc/logrotate.conf` every `LOGROTATE_INTERVAL` (default 86400 = 24 h). Access logs rotate weekly × 4, error logs weekly × 10, both compressed.
 - **TLS** — `ssl_prefer_server_ciphers on`; TLS 1.2+ only.
 
 ## Versioning
