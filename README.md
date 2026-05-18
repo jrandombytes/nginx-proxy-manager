@@ -2,7 +2,7 @@
 
 # jrandombytes/nginx-proxy-manager
 
-[![version](https://img.shields.io/badge/version-2.14.46-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
+[![version](https://img.shields.io/badge/version-2.14.47-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
 [![base](https://img.shields.io/badge/nginx-mainline-brightgreen.svg?style=for-the-badge)](https://nginx.org/en/download.html)
 
 ## What is this?
@@ -74,9 +74,10 @@ The official image (`jc21/nginx-proxy-manager`) bundles OpenResty and depends on
 | Cloudflare IP restriction | Not available | ✅ Drop non-CF origin requests (`return 444`, Settings UI) |
 | Session token storage | `localStorage` (XSS-readable) | ✅ HttpOnly cookie + CSRF double-submit (v2.14.28) |
 | Per-host nginx log viewer (admin) | ❌ Not available | ✅ Logs tab on proxy / dead / redirection-host modals; newest-first by default (v2.14.36; admin-gate fix v2.14.38; newest-first + real-IP + TZ v2.14.40) |
-| Real client IP behind Cloudflare | ❌ Logs show CF edge IP | ✅ `real-ip-header` setting (`CF-Connecting-IP` / `X-Real-IP` / `X-Forwarded-For`) — logs show actual visitor (v2.14.40, BUG-031) |
-| Timezone for log timestamps | ❌ UTC only | ✅ `TZ` env var (e.g. `Asia/Manila`); fails closed to UTC on invalid value (v2.14.40, BUG-032) |
-| Logrotate scheduler | ⚠️ Config ships but never fires (no cron) | ✅ s6 longrun runs logrotate daily (v2.14.36) |
+| Real client IP behind Cloudflare | ❌ Logs show CF edge IP | ✅ `real-ip-header` setting (`CF-Connecting-IP` / `X-Real-IP` / `X-Forwarded-For`) + Settings UI card + auto-detect when Cloudflare IP Restriction is enabled — logs show actual visitor IP |
+| Timezone for log timestamps | ❌ UTC only | ✅ `TZ` env var (e.g. `Asia/Manila`); fails closed to UTC on invalid value |
+| Logrotate scheduler | ⚠️ Config ships but never fires (no cron) | ✅ s6 longrun runs logrotate daily |
+| Admin dashboard metrics | ❌ Static "Hello" + 4 count tiles | ✅ Tabler-grid dashboard with traffic sparklines, status-class stacked-area chart, top hosts ranking; hand-rolled inline SVG (no new deps) |
 
 ## Quick start
 
