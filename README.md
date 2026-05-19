@@ -2,7 +2,7 @@
 
 # jrandombytes/nginx-proxy-manager
 
-[![version](https://img.shields.io/badge/version-2.14.54-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
+[![version](https://img.shields.io/badge/version-2.14.55-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
 [![base](https://img.shields.io/badge/nginx-mainline-brightgreen.svg?style=for-the-badge)](https://nginx.org/en/download.html)
 
 ## What is this?
@@ -77,7 +77,7 @@ The official image (`jc21/nginx-proxy-manager`) bundles OpenResty and depends on
 | Real client IP behind Cloudflare | ❌ Logs show CF edge IP | ✅ `real-ip-header` setting (`CF-Connecting-IP` / `X-Real-IP` / `X-Forwarded-For`) + Settings UI card + auto-detect when Cloudflare IP Restriction is enabled — logs show actual visitor IP |
 | Timezone for log timestamps | ❌ UTC only | ✅ `TZ` env var (e.g. `Asia/Manila`); fails closed to UTC on invalid value |
 | Logrotate scheduler | ⚠️ Config ships but never fires (no cron) | ✅ s6 longrun runs logrotate daily |
-| Admin dashboard metrics | ❌ Static "Hello" + 4 count tiles | ✅ Tabler-grid dashboard with traffic sparklines, status-class stacked-area chart, top hosts ranking; hand-rolled inline SVG (no new deps) |
+| Admin dashboard metrics | ❌ Static "Hello" + 4 count tiles | ✅ Tabler-grid dashboard: traffic sparklines, status-class stacked-area chart, top hosts, top client IPs (with Cloudflare-range badge), top 4xx/5xx (deep-link to error logs); hand-rolled inline SVG (no new deps) |
 
 ## Quick start
 
