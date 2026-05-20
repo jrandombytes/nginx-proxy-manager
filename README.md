@@ -154,10 +154,6 @@ SQLite is the default. MySQL/MariaDB and PostgreSQL are also supported via envir
 - **Logrotate enforcement** — The base image ships `/etc/logrotate.d/nginx-proxy-manager` but the container has no cron daemon, so it never fired upstream. This fork adds an s6 longrun service that runs `logrotate /etc/logrotate.conf` every `LOGROTATE_INTERVAL` (default 86400 = 24 h). Access logs rotate weekly × 4, error logs weekly × 10, both compressed.
 - **TLS** — `ssl_prefer_server_ciphers on`; TLS 1.2+ only.
 
-## Versioning
-
-This fork tracks the upstream 2.14.x release line. Patch versions (`2.14.x`) are this fork's own releases. The minor version will advance to 2.15.x when the official NginxProxyManager project releases v2.15.0.
-
 ## Source
 
 - **This fork (GitHub):** https://github.com/jrandombytes/nginx-proxy-manager
