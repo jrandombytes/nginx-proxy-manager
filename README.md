@@ -1,15 +1,15 @@
-﻿> **Note:** This Docker container is entirely unofficial and not made by the creators of Nginx Proxy Manager.
+> **Note:** This Docker container is entirely unofficial and not made by the creators of Nginx Proxy Manager.
 
 # jrandombytes/nginx-proxy-manager
 
-[![version](https://img.shields.io/badge/version-2.15.22-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
+[![version](https://img.shields.io/badge/version-2.15.23-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
 [![base](https://img.shields.io/badge/nginx-mainline-brightgreen.svg?style=for-the-badge)](https://nginx.org/en/download.html)
 
 ## What is this?
 
 **Nginx Proxy Manager** is a self-hosted reverse proxy with a web UI that just works. Route your domains to your services, get automatic SSL, and never write an nginx config file again.
 
-If you're running multiple services on your own server â€” whether that's a homelab, a VPS, or an on-premise machine â€” this is the missing piece that ties everything together.
+If you're running multiple services on your own server — whether that's a homelab, a VPS, or an on-premise machine — this is the missing piece that ties everything together.
 
 ## Who it's for
 
@@ -22,24 +22,24 @@ If you're running multiple services on your own server â€” whether that's a
 
 **No config files.** Add a proxy host, point it at a service or container, and you're done. What used to take hours of nginx editing takes under a minute.
 
-**Docker-friendly out of the box.** Running ten containers on ten different ports? Map each one to a clean subdomain â€” `app.yourdomain.com` instead of `yourdomain.com:8080`. No port juggling, no awkward URLs.
+**Docker-friendly out of the box.** Running ten containers on ten different ports? Map each one to a clean subdomain — `app.yourdomain.com` instead of `yourdomain.com:8080`. No port juggling, no awkward URLs.
 
 **SSL that manages itself.** Let's Encrypt certificates are issued and renewed automatically. Set it up once, forget about it.
 
-**More than just HTTP.** Proxy TCP and UDP streams alongside your web services â€” all from the same interface.
+**More than just HTTP.** Proxy TCP and UDP streams alongside your web services — all from the same interface.
 
 **Runs anywhere, depends on nothing.** Fully self-hosted, air-gap capable, no cloud account required. Your infrastructure stays yours.
 
-**Grows with you.** When you need it â€” access lists, basic auth, rate limiting, custom nginx directives â€” it's all there.
+**Grows with you.** When you need it — access lists, basic auth, rate limiting, custom nginx directives — it's all there.
 
 ## Best paired with Cloudflare
 
-Nginx Proxy Manager handles routing and SSL at your server. **Cloudflare's free tier** covers everything in front of it â€” DDoS protection, CDN, edge caching, and a basic WAF â€” with no extra cost or complexity.
+Nginx Proxy Manager handles routing and SSL at your server. **Cloudflare's free tier** covers everything in front of it — DDoS protection, CDN, edge caching, and a basic WAF — with no extra cost or complexity.
 
 Together, they give you a production-grade stack that punches well above its weight:
 
-- **Cloudflare** â€” protects and accelerates traffic before it reaches your server
-- **Nginx Proxy Manager** â€” routes that traffic to the right service once it arrives
+- **Cloudflare** — protects and accelerates traffic before it reaches your server
+- **Nginx Proxy Manager** — routes that traffic to the right service once it arrives
 
 Neither replaces the other. They do different jobs, and they do them well together.
 
@@ -54,7 +54,7 @@ Neither replaces the other. They do different jobs, and they do them well togeth
 
 ## Why this fork?
 
-The official image (`jc21/nginx-proxy-manager`) bundles OpenResty and depends on upstream for CVE patches â€” which can lag weeks or months behind disclosure. This fork owns the entire chain from **nginx.org apt â†’ base image â†’ app image**, so CVEs can be patched the same day they are disclosed.
+The official image (`jc21/nginx-proxy-manager`) bundles OpenResty and depends on upstream for CVE patches — which can lag weeks or months behind disclosure. This fork owns the entire chain from **nginx.org apt → base image → app image**, so CVEs can be patched the same day they are disclosed.
 
 ## Key differences from the official image
 
@@ -62,23 +62,23 @@ The official image (`jc21/nginx-proxy-manager`) bundles OpenResty and depends on
 |---|---|---|
 | Base OS | Debian 12 (bookworm) | **Debian 13 (trixie)** (v2.15.0) |
 | nginx version | OpenResty 1.27.1.2 (nginx 1.27.1) | **nginx mainline 1.31.0+** |
-| CVE-2026-42945 (CVSS 9.2) | âŒ Unpatched | âœ… Patched |
-| CVE-2025-6965 (SQLite) | âŒ Unpatched | âœ… Patched |
+| CVE-2026-42945 (CVSS 9.2) | ❌ Unpatched | ✅ Patched |
+| CVE-2025-6965 (SQLite) | ❌ Unpatched | ✅ Patched |
 | Base image control | Upstream-controlled | **Own pipeline** |
 | Build frequency | Manual upstream release | **Weekly auto-rebuild** |
-| Timing oracle (user enumeration) | Vulnerable | âœ… Fixed |
-| Shell escape RCE (DNS credentials) | âœ… Fixed upstream (2026-06-07) | âœ… Fixed — direct `fs.writeFile`, no shell involved |
-| SSRF guard | Not available | âœ… Opt-in (`BLOCK_PRIVATE_UPSTREAM=true`) |
-| Per-host rate limiting | Not available | âœ… `limit_req_zone` / `limit_req` with UI controls |
-| Cloudflare Turnstile on login | Not available | âœ… Opt-in bot protection (Settings UI) |
-| Login + 2FA rate limiting | Not available | âœ… `express-rate-limit` (10 req / 15 min) |
-| Cloudflare IP restriction | Not available | âœ… Drop non-CF origin requests (`return 444`, Settings UI) |
-| Session token storage | `localStorage` (XSS-readable) | âœ… HttpOnly cookie + CSRF double-submit (v2.14.28) |
-| Per-host nginx log viewer (admin) | âŒ Not available | âœ… Logs tab on proxy / dead / redirection-host modals; newest-first by default (v2.14.36; admin-gate fix v2.14.38; newest-first + real-IP + TZ v2.14.40) |
-| Real client IP behind Cloudflare | âŒ Logs show CF edge IP | âœ… `real-ip-header` setting (`CF-Connecting-IP` / `X-Real-IP` / `X-Forwarded-For`) + Settings UI card + auto-detect when Cloudflare IP Restriction is enabled â€” logs show actual visitor IP |
-| Timezone for log timestamps | âŒ UTC only | âœ… `TZ` env var (e.g. `Asia/Manila`); fails closed to UTC on invalid value |
-| Logrotate scheduler | âš ï¸ Config ships but never fires (no cron) | âœ… s6 longrun runs logrotate daily |
-| Admin dashboard metrics | âŒ Static "Hello" + 4 count tiles | âœ… Tabler-grid dashboard: traffic sparklines, status-class stacked-area chart, top hosts, top client IPs (with Cloudflare-range badge), top 4xx/5xx (deep-link to error logs); hand-rolled inline SVG (no new deps) |
+| Timing oracle (user enumeration) | Vulnerable | ✅ Fixed |
+| Shell escape RCE (DNS credentials) | ✅ Fixed upstream (2026-06-07) | ✅ Fixed — direct `fs.writeFile`, no shell involved |
+| SSRF guard | Not available | ✅ Opt-in (`BLOCK_PRIVATE_UPSTREAM=true`) |
+| Per-host rate limiting | Not available | ✅ `limit_req_zone` / `limit_req` with UI controls |
+| Cloudflare Turnstile on login | Not available | ✅ Opt-in bot protection (Settings UI) |
+| Login + 2FA rate limiting | Not available | ✅ `express-rate-limit` (10 req / 15 min) |
+| Cloudflare IP restriction | Not available | ✅ Drop non-CF origin requests (`return 444`, Settings UI) |
+| Session token storage | `localStorage` (XSS-readable) | ✅ HttpOnly cookie + CSRF double-submit (v2.14.28) |
+| Per-host nginx log viewer (admin) | ❌ Not available | ✅ Logs tab on proxy / dead / redirection-host modals; newest-first by default (v2.14.36; admin-gate fix v2.14.38; newest-first + real-IP + TZ v2.14.40) |
+| Real client IP behind Cloudflare | ❌ Logs show CF edge IP | ✅ `real-ip-header` setting (`CF-Connecting-IP` / `X-Real-IP` / `X-Forwarded-For`) + Settings UI card + auto-detect when Cloudflare IP Restriction is enabled — logs show actual visitor IP |
+| Timezone for log timestamps | ❌ UTC only | ✅ `TZ` env var (e.g. `Asia/Manila`); fails closed to UTC on invalid value |
+| Logrotate scheduler | ⚠️ Config ships but never fires (no cron) | ✅ s6 longrun runs logrotate daily |
+| Admin dashboard metrics | ❌ Static "Hello" + 4 count tiles | ✅ Tabler-grid dashboard: traffic sparklines, status-class stacked-area chart, top hosts, top client IPs (with Cloudflare-range badge), top 4xx/5xx (deep-link to error logs); hand-rolled inline SVG (no new deps) |
 
 ## Quick start
 
@@ -105,9 +105,9 @@ volumes:
 
 Access the admin UI at `http://<your-server>:81`
 
-> **First-time setup:** the container ships with no users. On first visit you will be shown a one-shot setup wizard â€” fill in your name, email, and password. That account becomes the initial administrator.
+> **First-time setup:** the container ships with no users. On first visit you will be shown a one-shot setup wizard — fill in your name, email, and password. That account becomes the initial administrator.
 >
-> For automated deployments, set `INITIAL_ADMIN_EMAIL` and `INITIAL_ADMIN_PASSWORD` env vars instead â€” the container will provision the admin at boot. Unset both vars after first successful login.
+> For automated deployments, set `INITIAL_ADMIN_EMAIL` and `INITIAL_ADMIN_PASSWORD` env vars instead — the container will provision the admin at boot. Unset both vars after first successful login.
 
 ## Environment variables
 
@@ -118,13 +118,13 @@ Access the admin UI at `http://<your-server>:81`
 | `BLOCK_PRIVATE_UPSTREAM` | `false` | Block proxy hosts targeting LAN/private IPs (SSRF hardening) |
 | `DISABLE_IPV6` | `false` | Disable IPv6 in generated nginx configs |
 | `DB_SQLITE_FILE` | `/data/database.sqlite` | SQLite database path |
-| `DB_MYSQL_HOST` | â€” | MySQL host (if using MySQL instead of SQLite) |
-| `DB_POSTGRES_HOST` | â€” | PostgreSQL host (if using PostgreSQL instead of SQLite) |
+| `DB_MYSQL_HOST` | — | MySQL host (if using MySQL instead of SQLite) |
+| `DB_POSTGRES_HOST` | — | PostgreSQL host (if using PostgreSQL instead of SQLite) |
 | `LE_STAGING` | `false` | Use Let's Encrypt staging environment |
 | `LOGROTATE_INTERVAL` | `86400` | Seconds between logrotate cycles (must be a positive integer; falls back to default on invalid value) |
-| `TZ` | â€” | IANA timezone (e.g. `Asia/Manila`, `Asia/Singapore`, `Etc/UTC`). Applied at boot to nginx log timestamps, audit log, Node logs, certbot renewal logs. Invalid value â†’ falls back to UTC. (v2.14.40) |
-| `FORCE_SECURE_COOKIES` | â€” | Force `Secure` flag on `npm_session` / `npm_csrf` cookies regardless of `req.secure`. Recommended `true` when behind Cloudflare or any TLS-terminating edge. |
-| `CORS_ALLOWED_ORIGINS` | â€” | Comma-separated allowlist of CORS origins. Unset = same-origin only. Never use `*` with credentials. |
+| `TZ` | — | IANA timezone (e.g. `Asia/Manila`, `Asia/Singapore`, `Etc/UTC`). Applied at boot to nginx log timestamps, audit log, Node logs, certbot renewal logs. Invalid value → falls back to UTC. (v2.14.40) |
+| `FORCE_SECURE_COOKIES` | — | Force `Secure` flag on `npm_session` / `npm_csrf` cookies regardless of `req.secure`. Recommended `true` when behind Cloudflare or any TLS-terminating edge. |
+| `CORS_ALLOWED_ORIGINS` | — | Comma-separated allowlist of CORS origins. Unset = same-origin only. Never use `*` with credentials. |
 
 ## Database backends
 
@@ -140,19 +140,19 @@ SQLite is the default. MySQL/MariaDB and PostgreSQL are also supported via envir
 
 ## Security fixes in this fork
 
-- **CVE-2026-42945 (NGINX Rift, CVSS 9.2)** â€” nginx â‰¤ 1.30.0 heap overflow RCE in rewrite module. Own base image uses nginx 1.31.0 mainline.
-- **CVE-2025-6965 (SQLite < 3.50.2)** â€” Memory corruption. `better-sqlite3` upgraded to bundle SQLite 3.52.0.
-- **Timing oracle** â€” Login always runs bcrypt even for unknown users, preventing email enumeration.
-- **Shell escape RCE** â€” DNS provider credentials correctly escaped with POSIX `'\''` idiom.
-- **Schema injection** â€” Pattern constraints on user-supplied fields prevent nginx config injection.
-- **Per-host rate limiting** â€” `limit_req_zone` / `limit_req` with UI controls (rate req/s, burst, nodelay).
-- **Cloudflare Turnstile** â€” Opt-in bot protection on the login page (Settings UI). Includes secret key redaction, nonce replay protection, and CSP headers for the widget.
-- **Login + 2FA rate limiting** â€” `express-rate-limit` on `/api/tokens` (10 failed/15 min) and `/api/tokens/2fa` (10/5 min).
-- **Cloudflare IP restriction** â€” Global toggle (Settings UI) that silently drops (`return 444`) any proxy host request not from a Cloudflare edge IP. Protects origins from bypass attacks when all traffic flows through Cloudflare.
-- **Session token security** â€” JWT is no longer stored in `window.localStorage`. Any XSS in the official image yields a full session token via `localStorage.getItem("authentications")` â€” no further exploit needed, ~24 h access. This fork moves the token to an `HttpOnly` + `SameSite=Strict` cookie (`npm_session`) that JavaScript cannot read. A CSRF double-submit token (`npm_csrf`) prevents cross-site request forgery now that the credential is cookie-bound. Token rotated on login, 2FA, impersonation, and logout; preserved on 5-minute refresh to avoid in-flight 403 races. Bearer `Authorization` header still accepted for API clients and CI pipelines. Set `FORCE_SECURE_COOKIES=true` when the admin UI is behind a TLS-terminating edge (e.g. Cloudflare).
-- **Per-host log viewer (admin-only)** â€” Triage 5xx and unexpected 4xx responses from the admin UI without SSHing into the container. New "Logs" tab on the proxy-host, dead-host, and redirection-host modals shows the tail of `/data/logs/{type}-{id}_{access,error}.log` via a bounded seek-from-end reader (256 KiB chunk, 1000-line max). Hidden from non-admin users. Every read is audit-logged. Path-traversal proof â€” host_type is on a closed allow-list, id is asserted positive integer, stream is `access|error` only.
-- **Logrotate enforcement** â€” The base image ships `/etc/logrotate.d/nginx-proxy-manager` but the container has no cron daemon, so it never fired upstream. This fork adds an s6 longrun service that runs `logrotate /etc/logrotate.conf` every `LOGROTATE_INTERVAL` (default 86400 = 24 h). Access logs rotate weekly Ã— 4, error logs weekly Ã— 10, both compressed.
-- **TLS** â€” `ssl_prefer_server_ciphers on`; TLS 1.2+ only.
+- **CVE-2026-42945 (NGINX Rift, CVSS 9.2)** — nginx ≤ 1.30.0 heap overflow RCE in rewrite module. Own base image uses nginx 1.31.0 mainline.
+- **CVE-2025-6965 (SQLite < 3.50.2)** — Memory corruption. `better-sqlite3` upgraded to bundle SQLite 3.52.0.
+- **Timing oracle** — Login always runs bcrypt even for unknown users, preventing email enumeration.
+- **Shell escape RCE** — DNS provider credentials correctly escaped with POSIX `'\''` idiom.
+- **Schema injection** — Pattern constraints on user-supplied fields prevent nginx config injection.
+- **Per-host rate limiting** — `limit_req_zone` / `limit_req` with UI controls (rate req/s, burst, nodelay).
+- **Cloudflare Turnstile** — Opt-in bot protection on the login page (Settings UI). Includes secret key redaction, nonce replay protection, and CSP headers for the widget.
+- **Login + 2FA rate limiting** — `express-rate-limit` on `/api/tokens` (10 failed/15 min) and `/api/tokens/2fa` (10/5 min).
+- **Cloudflare IP restriction** — Global toggle (Settings UI) that silently drops (`return 444`) any proxy host request not from a Cloudflare edge IP. Protects origins from bypass attacks when all traffic flows through Cloudflare.
+- **Session token security** — JWT is no longer stored in `window.localStorage`. Any XSS in the official image yields a full session token via `localStorage.getItem("authentications")` — no further exploit needed, ~24 h access. This fork moves the token to an `HttpOnly` + `SameSite=Strict` cookie (`npm_session`) that JavaScript cannot read. A CSRF double-submit token (`npm_csrf`) prevents cross-site request forgery now that the credential is cookie-bound. Token rotated on login, 2FA, impersonation, and logout; preserved on 5-minute refresh to avoid in-flight 403 races. Bearer `Authorization` header still accepted for API clients and CI pipelines. Set `FORCE_SECURE_COOKIES=true` when the admin UI is behind a TLS-terminating edge (e.g. Cloudflare).
+- **Per-host log viewer (admin-only)** — Triage 5xx and unexpected 4xx responses from the admin UI without SSHing into the container. New "Logs" tab on the proxy-host, dead-host, and redirection-host modals shows the tail of `/data/logs/{type}-{id}_{access,error}.log` via a bounded seek-from-end reader (256 KiB chunk, 1000-line max). Hidden from non-admin users. Every read is audit-logged. Path-traversal proof — host_type is on a closed allow-list, id is asserted positive integer, stream is `access|error` only.
+- **Logrotate enforcement** — The base image ships `/etc/logrotate.d/nginx-proxy-manager` but the container has no cron daemon, so it never fired upstream. This fork adds an s6 longrun service that runs `logrotate /etc/logrotate.conf` every `LOGROTATE_INTERVAL` (default 86400 = 24 h). Access logs rotate weekly × 4, error logs weekly × 10, both compressed.
+- **TLS** — `ssl_prefer_server_ciphers on`; TLS 1.2+ only.
 
 ## Source
 
