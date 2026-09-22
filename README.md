@@ -2,7 +2,7 @@
 
 # jrandombytes/nginx-proxy-manager
 
-[![version](https://img.shields.io/badge/version-2.15.31-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
+[![version](https://img.shields.io/badge/version-2.15.32-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
 [![base](https://img.shields.io/badge/nginx-mainline-brightgreen.svg?style=for-the-badge)](https://nginx.org/en/download.html)
 
 ## What is this?
@@ -140,7 +140,7 @@ SQLite is the default. MySQL/MariaDB and PostgreSQL are also supported via envir
 
 ## Security fixes in this fork
 
-- **CVE-2026-42945 (NGINX Rift, CVSS 9.2)** — nginx ≤ 1.30.0 heap overflow RCE in rewrite module. Own base image uses nginx 1.31.0 mainline.
+- **CVE-2026-42945 (NGINX Rift, CVSS 9.2)** — nginx ≤ 1.30.0 heap overflow RCE in rewrite module. Own base image uses nginx 1.31.6+ mainline.
 - **CVE-2025-6965 (SQLite < 3.50.2)** — Memory corruption. `better-sqlite3` upgraded to bundle SQLite 3.52.0.
 - **Timing oracle** — Login always runs bcrypt even for unknown users, preventing email enumeration.
 - **Shell escape RCE** — DNS provider credentials correctly escaped with POSIX `'\''` idiom.
