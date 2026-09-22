@@ -2,7 +2,7 @@
 
 # jrandombytes/nginx-proxy-manager
 
-[![version](https://img.shields.io/badge/version-2.15.32-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
+[![version](https://img.shields.io/badge/version-2.15.33-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
 [![base](https://img.shields.io/badge/nginx-mainline-brightgreen.svg?style=for-the-badge)](https://nginx.org/en/download.html)
 
 ## What is this?
@@ -61,7 +61,7 @@ The official image (`jc21/nginx-proxy-manager`) bundles OpenResty and depends on
 | Feature | Official (`jc21`) | This fork (`jrandombytes`) |
 |---|---|---|
 | Base OS | Debian 12 (bookworm) | **Debian 13 (trixie)** (v2.15.0) |
-| nginx version | OpenResty 1.27.1.2 (nginx 1.27.1) | **nginx mainline 1.31.0+** |
+| nginx version | OpenResty 1.27.1.2 (nginx 1.27.1) | **nginx mainline 1.31.6+** |
 | CVE-2026-42945 (CVSS 9.2) | ❌ Unpatched | ✅ Patched |
 | CVE-2025-6965 (SQLite) | ❌ Unpatched | ✅ Patched |
 | Base image control | Upstream-controlled | **Own pipeline** |
