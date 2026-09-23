@@ -2,7 +2,7 @@
 
 # jrandombytes/nginx-proxy-manager
 
-[![version](https://img.shields.io/badge/version-2.15.42-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
+[![version](https://img.shields.io/badge/version-2.15.43-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
 [![base](https://img.shields.io/badge/nginx-mainline-brightgreen.svg?style=for-the-badge)](https://nginx.org/en/download.html)
 
 ## What is this?
@@ -123,7 +123,7 @@ Access the admin UI at `https://<your-server>:81` — the admin UI serves HTTPS 
 | `LE_STAGING` | `false` | Use Let's Encrypt staging environment |
 | `LOGROTATE_INTERVAL` | `86400` | Seconds between logrotate cycles (must be a positive integer; falls back to default on invalid value) |
 | `TZ` | — | IANA timezone (e.g. `Asia/Manila`, `Asia/Singapore`, `Etc/UTC`). Applied at boot to nginx log timestamps, audit log, Node logs, certbot renewal logs. Invalid value → falls back to UTC. (v2.14.40) |
-| `DISABLE_ADMIN_SSL` | `false` | Opt out of the native self-signed HTTPS on port 81 (on by default as of v2.15.42) and keep plain HTTP instead. |
+| `DISABLE_ADMIN_SSL` | `false` | Opt out of the native self-signed HTTPS on port 81 (on by default as of v2.15.41) and keep plain HTTP instead. |
 | `FORCE_SECURE_COOKIES` | — | Force `Secure` flag on `npm_session` / `npm_csrf` cookies regardless of `req.secure`. Recommended `true` when behind Cloudflare or any TLS-terminating edge, or when `DISABLE_ADMIN_SSL=true`. |
 | `CORS_ALLOWED_ORIGINS` | — | Comma-separated allowlist of CORS origins. Unset = same-origin only. Never use `*` with credentials. |
 
