@@ -2,7 +2,7 @@
 
 # jrandombytes/nginx-proxy-manager
 
-[![version](https://img.shields.io/badge/version-2.15.46-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
+[![version](https://img.shields.io/badge/version-2.15.47-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
 [![base](https://img.shields.io/badge/nginx-mainline-brightgreen.svg?style=for-the-badge)](https://nginx.org/en/download.html)
 
 ## What is this?
@@ -79,7 +79,7 @@ The official image (`jc21/nginx-proxy-manager`) bundles OpenResty and depends on
 | Timezone for log timestamps | ❌ UTC only | ✅ `TZ` env var (e.g. `Asia/Manila`); fails closed to UTC on invalid value |
 | Logrotate scheduler | ⚠️ Config ships but never fires (no cron) | ✅ s6 longrun runs logrotate daily |
 | Admin dashboard metrics | ❌ Static "Hello" + 4 count tiles | ✅ Tabler-grid dashboard: traffic sparklines, status-class stacked-area chart, top hosts, top client IPs (with Cloudflare-range badge), top 4xx/5xx (deep-link to error logs); hand-rolled inline SVG (no new deps) |
-| Admin UI transport | Plain HTTP only | ✅ HTTPS by default — 10-year self-signed cert generated on first boot, no manual setup (`DISABLE_ADMIN_SSL=true` to opt out) |
+| Admin UI transport | Plain HTTP only | ✅ Optional native self-signed HTTPS — 10-year cert generated on first boot, no manual setup (`DISABLE_ADMIN_SSL=false` to opt in; plain HTTP by default) |
 
 ## Quick start
 
@@ -104,7 +104,7 @@ volumes:
   npm_letsencrypt:
 ```
 
-Access the admin UI at `https://<your-server>:81` — the admin UI serves HTTPS with a self-signed cert by default (expect a one-time browser trust warning), no manual cert setup needed. Set `DISABLE_ADMIN_SSL=true` to keep the previous plain-HTTP behavior instead.
+Access the admin UI at `http://<your-server>:81` — plain HTTP by default. Set `DISABLE_ADMIN_SSL=false` to opt into native self-signed HTTPS instead (expect a one-time browser trust warning; no manual cert setup needed).
 
 > **First-time setup:** the container ships with no users. On first visit you will be shown a one-shot setup wizard — fill in your name, email, and password. That account becomes the initial administrator.
 >
@@ -124,7 +124,7 @@ Access the admin UI at `https://<your-server>:81` — the admin UI serves HTTPS 
 | `LE_STAGING` | `false` | Use Let's Encrypt staging environment |
 | `LOGROTATE_INTERVAL` | `86400` | Seconds between logrotate cycles (must be a positive integer; falls back to default on invalid value) |
 | `TZ` | — | IANA timezone (e.g. `Asia/Manila`, `Asia/Singapore`, `Etc/UTC`). Applied at boot to nginx log timestamps, audit log, Node logs, certbot renewal logs. Invalid value → falls back to UTC. (v2.14.40) |
-| `DISABLE_ADMIN_SSL` | `false` | Opt out of the native self-signed HTTPS on port 81 (on by default as of v2.15.41) and keep plain HTTP instead. |
+| `DISABLE_ADMIN_SSL` | `true` | Defaults to plain HTTP on port 81 (reverted to this default in v2.15.47). Set to `false` to opt into native self-signed HTTPS instead. |
 | `FORCE_SECURE_COOKIES` | — | Force `Secure` flag on `npm_session` / `npm_csrf` cookies regardless of `req.secure`. Recommended `true` when behind Cloudflare or any TLS-terminating edge, or when `DISABLE_ADMIN_SSL=true`. |
 | `CORS_ALLOWED_ORIGINS` | — | Comma-separated allowlist of CORS origins. Unset = same-origin only. Never use `*` with credentials. |
 
