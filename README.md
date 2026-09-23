@@ -2,7 +2,7 @@
 
 # jrandombytes/nginx-proxy-manager
 
-[![version](https://img.shields.io/badge/version-2.15.43-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
+[![version](https://img.shields.io/badge/version-2.15.44-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
 [![base](https://img.shields.io/badge/nginx-mainline-brightgreen.svg?style=for-the-badge)](https://nginx.org/en/download.html)
 
 ## What is this?
@@ -79,6 +79,7 @@ The official image (`jc21/nginx-proxy-manager`) bundles OpenResty and depends on
 | Timezone for log timestamps | ❌ UTC only | ✅ `TZ` env var (e.g. `Asia/Manila`); fails closed to UTC on invalid value |
 | Logrotate scheduler | ⚠️ Config ships but never fires (no cron) | ✅ s6 longrun runs logrotate daily |
 | Admin dashboard metrics | ❌ Static "Hello" + 4 count tiles | ✅ Tabler-grid dashboard: traffic sparklines, status-class stacked-area chart, top hosts, top client IPs (with Cloudflare-range badge), top 4xx/5xx (deep-link to error logs); hand-rolled inline SVG (no new deps) |
+| Admin UI transport | Plain HTTP only | ✅ HTTPS by default — 10-year self-signed cert generated on first boot, no manual setup (`DISABLE_ADMIN_SSL=true` to opt out) |
 
 ## Quick start
 
