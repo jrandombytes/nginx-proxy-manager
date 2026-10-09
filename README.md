@@ -2,7 +2,7 @@
 
 # jrandombytes/nginx-proxy-manager
 
-[![version](https://img.shields.io/badge/version-2.15.55-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
+[![version](https://img.shields.io/badge/version-2.15.62-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
 [![base](https://img.shields.io/badge/nginx-mainline-brightgreen.svg?style=for-the-badge)](https://nginx.org/en/download.html)
 
 ## What is this?
@@ -143,9 +143,13 @@ SQLite is the default. MySQL/MariaDB and PostgreSQL are also supported via envir
 ## Security fixes in this fork
 
 - **CVE-2026-42945 (NGINX Rift, CVSS 9.2)** — nginx ≤ 1.30.0 heap overflow RCE in rewrite module. Own base image uses nginx 1.31.6+ mainline.
-- **CVE-2025-6965 (SQLite < 3.50.2)** — Memory corruption. `better-sqlite3` upgraded to bundle SQLite 3.52.0.
+- **CVE-2025-6965 (SQLite < 3.50.2)** — Memory corruption. `better-sqlite3` upgraded (now 13.x, bundling SQLite 3.53.4).
 - **Timing oracle** — Login always runs bcrypt even for unknown users, preventing email enumeration.
-- **Shell escape RCE** — DNS provider credentials correctly escaped with POSIX `'\''` idiom.
+- **Shell escape RCE** — DNS provider credentials are written with a direct file write; no shell is involved at all.
+- **Certificate private keys** — custom certificates' private keys are no longer returned by the certificates API (GET / list / create / update responses).
+- **Backend API bound to loopback** — the API process listens on `127.0.0.1` only; nginx is the only way in, so nothing can bypass its header handling.
+- **Forged `X-Forwarded-For`** — only the local nginx (loopback) is trusted to supply it, so a direct caller cannot evade per-IP login rate limiting or falsify the audit-log IP.
+- **Dependency advisories** — all known advisories in production dependencies (backend and frontend) are patched; Node.js 22.23.3.
 - **Schema injection** — Pattern constraints on user-supplied fields prevent nginx config injection.
 - **Per-host rate limiting** — `limit_req_zone` / `limit_req` with UI controls (rate req/s, burst, nodelay).
 - **Cloudflare Turnstile** — Opt-in bot protection on the login page (Settings UI). Includes secret key redaction, nonce replay protection, and CSP headers for the widget.
