@@ -2,7 +2,7 @@
 
 # jrandombytes/nginx-proxy-manager
 
-[![version](https://img.shields.io/badge/version-2.15.67-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
+[![version](https://img.shields.io/badge/version-2.15.68-green.svg?style=for-the-badge)](https://hub.docker.com/r/jrandombytes/nginx-proxy-manager)
 [![base](https://img.shields.io/badge/nginx-mainline-brightgreen.svg?style=for-the-badge)](https://nginx.org/en/download.html)
 
 ## What is this?
@@ -61,7 +61,7 @@ The official image (`jc21/nginx-proxy-manager`) bundles OpenResty and depends on
 | Feature | Official (`jc21`) | This fork (`jrandombytes`) |
 |---|---|---|
 | Base OS | Debian 12 (bookworm) | **Debian 13 (trixie)** (v2.15.0) |
-| nginx version | OpenResty 1.27.1.2 (nginx 1.27.1) | **nginx mainline 1.31.6+** |
+| nginx version | OpenResty 1.27.1.2 (nginx 1.27.1) | **nginx mainline 1.31.7+** |
 | CVE-2026-42945 (CVSS 9.2) | ❌ Unpatched | ✅ Patched |
 | CVE-2025-6965 (SQLite) | ❌ Unpatched | ✅ Patched |
 | Base image control | Upstream-controlled | **Own pipeline** |
@@ -142,7 +142,7 @@ SQLite is the default. MySQL/MariaDB and PostgreSQL are also supported via envir
 
 ## Security fixes in this fork
 
-- **CVE-2026-42945 (NGINX Rift, CVSS 9.2)** — nginx ≤ 1.30.0 heap overflow RCE in rewrite module. Own base image uses nginx 1.31.6+ mainline.
+- **CVE-2026-42945 (NGINX Rift, CVSS 9.2)** — nginx ≤ 1.30.0 heap overflow RCE in rewrite module. Own base image uses nginx 1.31.7+ mainline.
 - **CVE-2025-6965 (SQLite < 3.50.2)** — Memory corruption. `better-sqlite3` upgraded (now 13.x, bundling SQLite 3.53.4).
 - **Timing oracle** — Login always runs bcrypt even for unknown users, preventing email enumeration.
 - **Shell escape RCE** — DNS provider credentials are written with a direct file write; no shell is involved at all.
